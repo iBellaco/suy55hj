@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- Widget and App Theme Colors -->
+    <color name="widget_bg">#18191C</color>
+    <color name="widget_card">#24262B</color>
+    <color name="widget_card_alt">#2D3037</color>
+    <color name="widget_border">#373A42</color>
+    <color name="gemini_primary">#4E82EE</color>
+    <color name="gemini_secondary">#7C4DFF</color>
+    <color name="gemini_surface">#1A233A</color>
+    <color name="gpt_primary">#10A37F</color>
+    <color name="gpt_secondary">#0D8A6C</color>
+    <color name="gpt_surface">#162C24</color>
+    <color name="status_good">#22C55E</color>
+    <color name="status_warning">#F59E0B</color>
+    <color name="status_alert">#EF4444</color>
+    <color name="text_muted">#9CA3AF</color>
+    <color name="text_hint">#6B7280</color>
+</resources>

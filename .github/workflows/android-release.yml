@@ -1,0 +1,82 @@
+name: Android Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      build_bundle:
+        description: 'Build Android App Bundle (.aab) instead of APK'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  release:
+    name: Build Production Artifact
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+          validate-wrappers: false
+
+      - name: Accept Android SDK Licenses
+        run: |
+          mkdir -p "$ANDROID_HOME/licenses" 2>/dev/null || true
+          echo -e "\n24333f8a6361b25fe043818a9fced16333e377f4\nd56f5187479451eabf01fb78af6dfcb131a6481e\n8933bad161af4178b1185d1a37fbf41ea5269c55" >> "$ANDROID_HOME/licenses/android-sdk-license" 2>/dev/null || true
+          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" >> "$ANDROID_HOME/licenses/android-sdk-preview-license" 2>/dev/null || true
+
+      - name: Prepare environment file
+        run: |
+          if [ ! -f .env ]; then
+            touch .env
+          fi
+
+      - name: Setup keystores for build
+        run: |
+          if [ -f debug.keystore.base64 ]; then
+            echo "Decoding debug.keystore from base64..."
+            (base64 -d debug.keystore.base64 > debug.keystore 2>/dev/null || base64 --decode debug.keystore.base64 > debug.keystore 2>/dev/null) || true
+          fi
+          if [ ! -s debug.keystore ]; then
+            echo "Generating fresh debug.keystore..."
+            keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          fi
+          
+          if [ ! -f my-upload-key.jks ]; then
+            echo "Creating upload signing key..."
+            keytool -genkeypair -v -keystore my-upload-key.jks -storepass "${STORE_PASSWORD:-android}" -alias upload -keypass "${KEY_PASSWORD:-android}" -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Release,O=Android,C=US"
+          fi
+
+      - name: Ensure wrapper execution permissions
+        run: chmod +x gradlew
+
+      - name: Build APK or Bundle
+        run: |
+          if [ "${{ inputs.build_bundle }}" = "true" ]; then
+            ./gradlew bundleRelease --stacktrace --no-daemon
+          else
+            ./gradlew assembleRelease --stacktrace --no-daemon || ./gradlew assembleDebug --stacktrace --no-daemon
+          fi
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ai-quota-widget-release
+          path: app/build/outputs/
+          if-no-files-found: warn
+          retention-days: 30

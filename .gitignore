@@ -1,0 +1,32 @@
+# Gradle & Android builds
+*.iml
+.gradle/
+.kotlin/
+build/
+*/build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local configuration & environment secrets
+local.properties
+/local.properties
+.env
+*.env.local
+
+# IDE
+.idea/
+*.ipr
+*.iws
+.DS_Store
+
+# Keystores & sensitive signing keys
+*.jks
+*.keystore
+debug.keystore
+my-upload-key.jks
+
+# Output binaries
+*.apk
+*.aab
+

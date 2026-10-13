@@ -1,0 +1,6 @@
+{
+  "name": "AI Quota Widget",
+  "description": "Monitorea en tiempo real el consumo y saldo restante de Gemini y GPT con widgets para tu pantalla de inicio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
